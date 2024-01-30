@@ -291,7 +291,6 @@ class MoveNetPreprocessor(object):
     return total_df
   
 
-
 def download_file( filename, url = "https://cdn.pixabay.com/photo/2017/03/03/17/30/yoga-2114512_960_720.jpg"):
     response = requests.get(url)
     with open(filename, 'wb') as out_file:
@@ -310,7 +309,6 @@ def test_image():
 
 
 # test_image()
-
 
 
 
