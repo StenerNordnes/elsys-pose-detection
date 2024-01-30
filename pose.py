@@ -48,6 +48,7 @@ movenet = Movenet('movenet_thunder')
 # the input image to improve pose estimation accuracy.
 def detect(input_tensor, inference_count=3):
   """Runs detection on an input image.
+  Returns a person entity containing the keypoint landmarks.
  
   Args:
     input_tensor: A [height, width, 3] Tensor of type tf.float32.
