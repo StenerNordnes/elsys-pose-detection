@@ -3,40 +3,42 @@ import tensorflow as tf
 import numpy as np
 import cv2
 from pose import detect, draw_prediction_on_image
+import matplotlib.pyplot as plt
+
+
 with open('pose_labels.txt', 'r') as  f:
-    labels = f.readlines() 
+    labels = f.readlines()
 
 detection_threshold = 0.5
-image_path = r'./tmp/ergerg.jpg'
+image_path = "./tmp/sasjo.jpg"
 image = tf.io.read_file(image_path)
 
-fileformat = image_path.split('.')[-1]
+fileformat = image_path.split(".")[-1]
 
-if fileformat == 'png':
+if fileformat == "png":
     image = tf.io.decode_png(image)
 else:
     image = tf.io.decode_jpeg(image)
 
-def predictImage(image):
 
+def predictImage(image):
     person = detect(image)
 
     # Save landmarks if all landmarks were detected
-    min_landmark_score = min(
-        [keypoint.score for keypoint in person.keypoints])
+    min_landmark_score = min([keypoint.score for keypoint in person.keypoints])
     should_keep_image = min_landmark_score >= detection_threshold
-
 
     if not should_keep_image:
         pass
 
     # Get landmarks and scale it to the same size as the input image
     pose_landmarks = np.array(
-        [[keypoint.coordinate.x, keypoint.coordinate.y, keypoint.score]
-        for keypoint in person.keypoints],
-        dtype=np.float32)
-
-
+        [
+            [keypoint.coordinate.x, keypoint.coordinate.y, keypoint.score]
+            for keypoint in person.keypoints
+        ],
+        dtype=np.float32,
+    )
 
     # Normalize landmarks
     coordinates = pose_landmarks.flatten().astype(np.float32).tolist()
@@ -46,36 +48,54 @@ def predictImage(image):
     interpreter = tf.lite.Interpreter(model_path="pose_classifier.tflite")
     interpreter.allocate_tensors()
 
-
     # Get input and output tensors
     input_index = interpreter.get_input_details()[0]["index"]
     output_index = interpreter.get_output_details()[0]["index"]
-
 
     # Run the model
     interpreter.set_tensor(input_index, coordinates)
     interpreter.invoke()
     output = interpreter.tensor(output_index)
 
+    print(output())
 
     labelIdx = np.argmax(output()[0])
 
     confidence = output()[0][labelIdx]
-    
+
     classification = labels[labelIdx].strip()
 
     print(classification, confidence)
-    wireframe_image = draw_prediction_on_image(np.array(image), person, close_figure=True, keep_input_size=True)
+    wireframe_image = draw_prediction_on_image(
+        np.array(image), person, close_figure=True, keep_input_size=True
+    )
 
-    return classification, confidence, wireframe_image
 
+    return (
+        classification, 
+            confidence, 
+            wireframe_image
+            )
+# %%
+def test_image(filename):
+    image = tf.io.read_file(f'./tmp/{filename}.jpg') 
+    image = tf.io.decode_jpeg(image)
+    person = detect(image)
+    # img = draw_prediction_on_image(image.numpy(), person, crop_region=None, 
+    #                             close_figure=False, keep_input_size=True)
 
+    clss, conf, img = predictImage(image)
+    print(clss, conf)
+    plt.imshow(img)
+    plt.show()
+
+# %%
 
 
 def VideoCapture():
     # Open the webcam
     cap = cv2.VideoCapture(0)
-    name = ''
+    name = ""
 
     while True:
         # Read a frame from the webcam
@@ -93,37 +113,36 @@ def VideoCapture():
         # Run the prediction model on the frame
         newName, conf, frame = predictImage(frame_tensor)
 
-
-        if conf > 0.98:
+        if conf > 0.999:
             name = newName
         else:
-            name = 'Unknown'
+            name = "Unknown"
 
-        cv2.putText(frame, name, (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-
-
+        cv2.putText(frame, name, (100, 100), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 0), 10)
 
         # Display the frame
-        cv2.imshow('Video', frame)
+        cv2.imshow("Video", frame)
 
         # If the user presses 'q', exit the loop
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     # Release the webcam and close the window
     cap.release()
     cv2.destroyAllWindows()
 
+
 # make a video with overlay and classification from existing video
 
+
 def VideoCapture2():
-    cap = cv2.VideoCapture('./tmp/test.mp4')
-    name = ''
+    cap = cv2.VideoCapture("./tmp/test.mp4")
+    name = ""
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
-    fourcc = cv2.VideoWriter.fourcc(*'MP4V')  # Change the codec here
-    out = cv2.VideoWriter('output.mp4', fourcc, fps, (width, height))
+    fourcc = cv2.VideoWriter.fourcc(*"MP4V")  # Change the codec here
+    out = cv2.VideoWriter("output.mp4", fourcc, fps, (width, height))
 
     # Create an empty list to store the frames
 
@@ -140,14 +159,14 @@ def VideoCapture2():
         if conf > 0.98:
             name = newName
         else:
-            name = 'Unknown'
+            name = "Unknown"
 
         cv2.putText(frame, name, (50, 50), cv2.FONT_HERSHEY_PLAIN, 10, (0, 255, 0), 2)
         out.write(frame)
 
         # Append the frame to the list
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     cap.release()
@@ -157,54 +176,5 @@ def VideoCapture2():
 
     out.release()
 
-VideoCapture2()
 
-def manipulate_video(input_file, output_file):
-    # Open the video file
-    cap = cv2.VideoCapture(input_file)
-
-    # Check if the video file opened successfully
-    if not cap.isOpened():
-        print("Error: Could not open video file.")
-        return
-
-    # Get video properties
-    fps = int(cap.get(cv2.CAP_PROP_FPS))
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-    # Create VideoWriter object to write the manipulated frames
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')  # You can choose the codec based on your needs
-    out = cv2.VideoWriter(output_file, fourcc, fps, (width, height))
-
-    while True:
-        # Read a frame from the video
-        ret, frame = cap.read()
-
-        # Break the loop if the video is over
-        if not ret:
-            break
-
-        # Your manipulation on the frame goes here
-        # For example, let's convert the frame to grayscale
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-        # Write the manipulated frame to the output video
-        out.write(gray_frame)
-
-        # Display the manipulated frame (optional)
-        cv2.imshow('Manipulated Frame', gray_frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    # Release resources
-    cap.release()
-    out.release()
-    cv2.destroyAllWindows()
-
-# # Specify the input and output file paths
-# input_file_path = 'input_video.mp4'
-# output_file_path = 'output_video.avi'
-
-# # Call the function to manipulate the video
-# manipulate_video(input_file_path, output_file_path)
+VideoCapture()

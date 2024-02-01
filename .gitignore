@@ -5,8 +5,11 @@ env/
 
 poses_images_out_test
 poses_images_out_train
+test_custom_dataset
 tmp
 yoga_cg
+pose_images
+split_pose_images
 
 test_data.csv
 train_data.csv
@@ -14,6 +17,7 @@ train_data.csv
 # Ignore tflite models
 *.tflite
 *.hdf5
+*.mp4
 pose_labels.txt
 
 

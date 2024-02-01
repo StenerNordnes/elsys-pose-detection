@@ -37,9 +37,9 @@ from tensorflow import keras
 pose_sample_rpi_path = os.path.join(os.getcwd(), 'examples/lite/examples/pose_estimation/raspberry_pi')
 sys.path.append(pose_sample_rpi_path)
 
-import utils
-from data import BodyPart
-from ml import Movenet
+from examples.lite.examples.pose_estimation.raspberry_pi import utils
+from examples.lite.examples.pose_estimation.raspberry_pi.data import BodyPart
+from examples.lite.examples.pose_estimation.raspberry_pi.ml import Movenet
 
 movenet = Movenet('movenet_thunder')
 
@@ -298,8 +298,9 @@ def download_file( filename, url = "https://cdn.pixabay.com/photo/2017/03/03/17/
 
 # download_file("./tmp/image.jpeg")
 
-def test_image():
-    image = tf.io.read_file('./tmp/image.jpeg')
+# %%
+def test_image(filename):
+    image = tf.io.read_file(f'./tmp/{filename}.jpg') 
     image = tf.io.decode_jpeg(image)
     person = detect(image)
     img = draw_prediction_on_image(image.numpy(), person, crop_region=None, 
@@ -307,8 +308,8 @@ def test_image():
     plt.imshow(img)
     plt.show()
 
+# %%
 
-# test_image()
 
 
 
@@ -316,7 +317,7 @@ def test_image():
 # Here we will preprocess the images and create the csv files
 is_skip_step_1 = False
 
-use_custom_dataset = False
+use_custom_dataset = True
 
 dataset_is_split = False
 
@@ -390,7 +391,7 @@ if __name__ == '__main__':
     # You must edit these two lines to match your archive and images folder name:
     # !tar -xf YOUR_DATASET_ARCHIVE_NAME.tar
     # !unzip -q YOUR_DATASET_ARCHIVE_NAME.zip
-    dataset_in = 'YOUR_DATASET_DIR_NAME'
+    dataset_in = 'pose_images'
 
     # You can leave the rest alone:
     if not os.path.isdir(dataset_in):
@@ -607,7 +608,7 @@ if __name__ == '__main__':
 
   # Start training
   history = model.fit(X_train, y_train,
-                      epochs=200,
+                      epochs=450,
                       batch_size=16,
                       validation_data=(X_val, y_val),
                       callbacks=[checkpoint, earlystopping])
