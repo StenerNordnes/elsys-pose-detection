@@ -15,10 +15,8 @@ test_data.csv
 train_data.csv
 
 # Ignore tflite models
-*.tflite
 *.hdf5
 *.mp4
-pose_labels.txt
 
 
 
