@@ -22,6 +22,9 @@ def update_score(user_id,new_score):
     })
 
 
+update_score('pasient1', 10)
+
+
 
 
 

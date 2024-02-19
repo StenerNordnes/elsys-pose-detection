@@ -16,13 +16,7 @@ poseConsecutive = 0
 
 while True:
     img = picam2.capture_array()
-
-
-    print(img)
     tensor = tf.convert_to_tensor(img)
-
-
-
     newName, conf, frame = predictImage(tensor)
 
     if conf > 0.999:
