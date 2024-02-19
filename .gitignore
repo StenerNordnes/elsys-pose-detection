@@ -2,6 +2,11 @@ examples/
 
 # Ignore Python virtual environment
 env/
+.venv
+
+posemein-76815-e7599e66472b.json
+
+*-log
 
 poses_images_out_test
 poses_images_out_train

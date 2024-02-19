@@ -10,7 +10,7 @@ with open('pose_labels.txt', 'r') as  f:
     labels = f.readlines()
 
 detection_threshold = 0.5
-image_path = "./tmp/sasjo.jpg"
+image_path = "./tmp/vjmi7zdpxmo31.jpg"
 image = tf.io.read_file(image_path)
 
 fileformat = image_path.split(".")[-1]
@@ -102,6 +102,7 @@ def VideoCapture():
         ret, frame = cap.read()
 
         if not ret:
+            print("Error reading frame")
             break
 
         # Convert the frame to RGB (OpenCV uses BGR by default)
@@ -176,5 +177,7 @@ def VideoCapture2():
 
     out.release()
 
-
-VideoCapture()
+if __name__ == "__main__":
+    test_image("vjmi7zdpxmo31")
+    # VideoCapture2()
+    # VideoCapture()
