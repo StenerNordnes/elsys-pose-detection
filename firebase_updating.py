@@ -20,11 +20,20 @@ def update_score(user_id,new_score):
     doc_ref.update({
         'Score': firestore.Increment(new_score)
     })
+    print(f'Updated score for {user_id} with {new_score} points')
+    logged_in_ref = db.collection('data').document('current_user')
+    logged_in_ref.update({
+        'userID': '',
+    })
+    print('Logged out user')
 
 
-update_score('pasient1', 10)
+
+def fetch_current_user() -> str:
+    doc_ref = db.collection('data').document('current_user')
+    doc = doc_ref.get()
+    return doc.to_dict()['userID']
 
 
-
-
-
+if __name__ == '__main__':
+    print(fetch_current_user())
