@@ -22,6 +22,7 @@ train_data.csv
 # Ignore tflite models
 *.hdf5
 *.mp4
+*.jpg
 
 
 
