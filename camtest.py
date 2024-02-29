@@ -3,7 +3,7 @@ import time
 import tensorflow as tf
 from predict_label import predictImage
 import cv2
-from firebase_updating import update_score, pasientMap
+from firebase_updating import update_score, pasientMap, fetch_current_user, playAudio, fetch_user_pose
 
 picam2 = Picamera2()
 
@@ -14,25 +14,35 @@ picam2.start()
 name = ''
 poseConsecutive = 0
 
+current_userID = fetch_current_user()
+pose = fetch_user_pose(current_userID)
+
+print(f'Current user: {current_userID}\nPose: {pose}')
+
+
 while True:
     img = picam2.capture_array()
     tensor = tf.convert_to_tensor(img)
-    newName, conf, frame = predictImage(tensor)
-
-    if conf > 0.999:
-        name = newName
+    (newName, 
+     conf 
+     ,frame
+     ) = predictImage(tensor)
+    
+    if newName == pose and conf >= 0.99:
         poseConsecutive += 1
     else:
-        name = ''
         poseConsecutive = 0
 
-    if poseConsecutive > 10:
-        update_score(pasientMap[name], 10)
-        poseConsecutive = 0
-        
+    if poseConsecutive == 10:
+        print(f'Pose {newName} detected for 15 consecutive frames')
+        print(f'Updating score for {current_userID}')
+        update_score(current_userID, pose)
+        playAudio(current_userID)
+        break
 
-
-    cv2.imwrite("frame.jpg", frame)
+    cv2.imwrite('frame.jpg', frame)
+    name = newName
     print(newName, conf)
-    time.sleep(5)
+    print('Consecutive count: ', poseConsecutive)
+    # time.sleep(5)
 
