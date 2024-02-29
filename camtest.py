@@ -19,6 +19,10 @@ pose = fetch_user_pose(current_userID)
 
 print(f'Current user: {current_userID}\nPose: {pose}')
 
+if current_userID == '' or pose is None:
+    print('No user logged in')
+    exit(0)
+
 
 while True:
     img = picam2.capture_array()

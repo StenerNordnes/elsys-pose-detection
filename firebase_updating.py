@@ -28,8 +28,14 @@ pygame.init()
 def playAudio(user_id):
     try:
         user_object = db.collection('brukere').document(user_id).get()
-        music_name = user_object.to_dict()['musikk']
-        filename = db.collection('Musikk').document(music_name).get().to_dict()['filnavn']
+
+        if user_object.to_dict()['melodi'] != '':
+            filename = user_object.to_dict()['melodi']
+            filename = 'Mussa/' + filename 
+        else:
+            music_name = user_object.to_dict()['musikk']
+            filename = db.collection('Musikk').document(music_name).get().to_dict()['filnavn']
+            
         blob = bucket.blob(filename)
         blob.download_to_filename(destination_file_name)
         audio = MP3(destination_file_name)
@@ -55,20 +61,25 @@ with open('pose_labels.txt', 'r') as  f:
 
 
 def update_score(user_id,pose):
-    pose_ref = db.collection('Poseringer').document(pose)
-    pose_points = pose_ref.get().to_dict()['Poeng']
+    try:
+        pose_ref = db.collection('Poseringer').document(pose)
+        pose_points = pose_ref.get().to_dict()['Poeng']
 
 
-    doc_ref = db.collection('brukere').document(user_id)
-    doc_ref.update({
-        'score': firestore.Increment(pose_points)
-    })
-    print(f'Updated score for {user_id} with {pose_points} points')
-    logged_in_ref = db.collection('data').document('current_user')
-    logged_in_ref.update({
-        'userID': '',
-    })
-    print('Logged out user')
+        doc_ref = db.collection('brukere').document(user_id)
+        doc_ref.update({
+            'score': firestore.Increment(pose_points),
+            'innsjekkTidspunkt': firestore.SERVER_TIMESTAMP,
+        })
+        print(f'Updated score for {user_id} with {pose_points} points')
+        logged_in_ref = db.collection('data').document('current_user')
+        logged_in_ref.update({
+            'userID': '',
+        })
+        print('Logged out user')
+    except Exception as e:
+        print(e)
+        return
 
 
 
@@ -100,5 +111,4 @@ def fetch_user_pose(user_id) -> str:
         return None
 
 if __name__ == '__main__':
-    playAudio('7cselDAiVXMbkjPt2L0TuA0KsSp1')
-    update_score('7cselDAiVXMbkjPt2L0TuA0KsSp1', 'bicep')
+    playAudio('laH0R7KJwrSzEgD9rLP9EfQVUhH2')
