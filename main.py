@@ -51,13 +51,8 @@ def button_callback(channel):
 try:
     GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 23 to be an input pin and set initial value to be pulled low (off)
     # # Setup event on pin 23 rising edge with debounce time
-    # GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
-    # input("Press Enter to stop...")
-
-    GPIO.add_event_detect(15, GPIO.RISING, callback=lambda x: print('pressed down'), bouncetime=1000)
-    while True:
-        time.sleep(0.1)
-        print('waiting for button press')
+    GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
+    input("Press Enter to stop...")
 
 
 except Exception as e:

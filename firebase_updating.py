@@ -23,7 +23,6 @@ import pygame
 import time
 from mutagen.mp3 import MP3
 
-pygame.init()
 
 def playAudio(user_id):
     try:
@@ -112,4 +111,11 @@ def fetch_user_pose(user_id) -> str:
         return None
 
 if __name__ == '__main__':
-    playAudio('7cselDAiVXMbkjPt2L0TuA0KsSp1')
+    pygame.init()
+    audio = MP3('output.mp3')
+    print(audio.info.length)
+    sound = pygame.mixer.music.load('output.mp3')  
+    pygame.mixer.music.play()
+    time.sleep(audio.info.length)
+    pygame.mixer.music.stop()
+    pygame.quit()
