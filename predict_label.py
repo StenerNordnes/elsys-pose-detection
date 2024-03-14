@@ -66,9 +66,10 @@ def predictImage(image):
     classification = labels[labelIdx].strip()
 
     print(classification, confidence)
-    wireframe_image = draw_prediction_on_image(
-        np.array(image), person, close_figure=True, keep_input_size=True
-    )
+    # wireframe_image = draw_prediction_on_image(
+    #     np.array(image), person, close_figure=True, keep_input_size=True
+    # )
+    wireframe_image = None
 
 
     return (

@@ -35,7 +35,8 @@ def playAudio(user_id):
         else:
             music_name = user_object.to_dict()['musikk']
             filename = db.collection('Musikk').document(music_name).get().to_dict()['filnavn']
-            
+            filename = 'Mussa/' + filename
+                        
         blob = bucket.blob(filename)
         blob.download_to_filename(destination_file_name)
         audio = MP3(destination_file_name)
@@ -111,4 +112,4 @@ def fetch_user_pose(user_id) -> str:
         return None
 
 if __name__ == '__main__':
-    playAudio('laH0R7KJwrSzEgD9rLP9EfQVUhH2')
+    playAudio('7cselDAiVXMbkjPt2L0TuA0KsSp1')
