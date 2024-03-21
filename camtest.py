@@ -6,6 +6,9 @@ from predict_label import predictImage
 from picamera2 import Picamera2
 import RPi.GPIO as GPIO
 
+if __name__ == '__main__':
+    GPIO.setmode(GPIO.BCM)  # Set the GPIO pin naming mode
+
 BUTTON_PIN = 15  # replace with your button's GPIO pin number
 GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Set up the button pin as an input
 

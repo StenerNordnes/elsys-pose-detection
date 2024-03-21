@@ -1,6 +1,6 @@
 python3 -m venv --system-site-packages env
 
-pip install tensorflow tensorflow_hub matplotlib adafruit-blinka adafruit-circuitpython-neopixel
+pip install tensorflow tensorflow_hub matplotlib adafruit-blinka adafruit-circuitpython-neopixel tqdm scikit-learn
 
 
 
