@@ -1,5 +1,7 @@
 python3 -m venv --system-site-packages env
 
+pip install tensorflow tensorflow_hub matplotlib adafruit-blinka adafruit-circuitpython-neopixel
+
 
 
 # Dette er i utganspunktet ikke nødvendig om pakkene som kreves allerede er installert
