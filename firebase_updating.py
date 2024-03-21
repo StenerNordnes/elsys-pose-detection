@@ -25,6 +25,8 @@ from mutagen.mp3 import MP3
 
 
 def playAudio(user_id):
+    pygame.mixer.init()
+
     try:
         user_object = db.collection('brukere').document(user_id).get()
 

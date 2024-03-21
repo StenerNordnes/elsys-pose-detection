@@ -1,9 +1,9 @@
-from picamera2 import Picamera2
 import time
 import tensorflow as tf
-from predict_label import predictImage
 import cv2
 from firebase_updating import update_score, pasientMap, fetch_current_user, playAudio, fetch_user_pose
+from predict_label import predictImage
+from picamera2 import Picamera2
 import RPi.GPIO as GPIO
 
 BUTTON_PIN = 15  # replace with your button's GPIO pin number
@@ -17,7 +17,6 @@ picam2.start()
 
 
 def cameraMain():
-
     successful_exit = False
 
     name = ''

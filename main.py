@@ -1,7 +1,7 @@
 from colors import fade_yellow, rainbow_cycle, blink_green, blink_red, shutOff, fillEveryOtherRedYellow
-from camtest import cameraMain
 import RPi.GPIO as GPIO
 import time
+from camtest import cameraMain
 
 GPIO.setwarnings(False) # Ignore warning for now
 

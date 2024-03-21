@@ -1,6 +1,6 @@
-# from picamera2 import Picamera2
-# import time
-# import cv2
+from picamera2 import Picamera2
+import time
+import cv2
 from firebase_updating import playAudio
 
 # picam2 = Picamera2()
@@ -16,3 +16,7 @@ from firebase_updating import playAudio
 # cv2.imwrite('frame.jpg', img)
 
 playAudio('SIqui9NaXKfDspXwnfvZVWb5Nz32')
+
+
+# import libcamera
+
