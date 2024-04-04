@@ -14,3 +14,9 @@ sudo apt install libkms++-dev libfmt-dev libdrm-dev
 pip install --upgrade pip
 pip install wheel
 pip install rpi-libcamera rpi-kms picamera2
+
+
+
+### Unngår edge-detection error
+pip uninstall rpi-gpio
+pip install rpi-lgpio
