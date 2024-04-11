@@ -1,66 +1,55 @@
 from colors import fade_yellow, rainbow_cycle, blink_green, blink_red, shutOff, fillEveryOtherRedYellow
-import RPi.GPIO as GPIO
-import time
-from camtest import cameraMain
-import asyncio
+import RPi.GPIO as GPIO  # Importerer GPIO-biblioteket for å kontrollere Raspberry Pi GPIO-pinner
+import time  
+from camtest import cameraMain 
+import asyncio  
 
-GPIO.setwarnings(False) # Ignore warning for now
+GPIO.setwarnings(False)  # Ignorerer advarsler for nå
 
-push_count = 0
-is_running = False
+push_count = 0  
+is_running = False 
 
 
-def button_callback(channel):
-    global push_count
-    global is_running
-    if is_running:
+def button_callback(channel):  # Tilbakekallsfunksjon som vil bli kalt når knappen trykkes
+    global push_count  
+    global is_running  
+    if is_running:  # Hvis knappen allerede kjører, skriv ut en melding og returner
         print('Button is already running')
         return
     
-    is_running = True
+    is_running = True  
 
-    looper = push_count % 1
-    print("Button was pushed!", looper)
+    print("Button was pushed!")
 
-    if looper == 0:
-        fillEveryOtherRedYellow()
-        wasSucessful = cameraMain()
-        if wasSucessful:
-            blink_green()
-        else:
-            blink_red()
+    fillEveryOtherRedYellow()  # Initialiserer lyset til poserings mode
+    wasSucessful = cameraMain()  # CameraMain håndterer poseringsgjenkjenning og returnerer True hvis posen ble gjenkjent, ellers False
+
+    if wasSucessful:  # Blinker grønt ved vellykket posering
+        blink_green()
+    else:  # Blinker rødt ved mislykket posering
+        blink_red()
+
     
-    time.sleep(1)
-    push_count += 1
-    is_running = False
-    isIdleRunning = True
+    time.sleep(1)  
+    push_count += 1 
+    is_running = False 
 
-    task = asyncio.create_task(rainbow_cycle(0.1))
-
-    # while isIdleRunning:
-    #     isIdleRunning = rainbow_cycle(0.1)
-
-    #     if not isIdleRunning:
-    #         shutOff()
-    #         break
-    
+    asyncio.create_task(rainbow_cycle(0.1))  # Oppretter asynkron idle state når den venter på en ny deteksjon
     print('Button callback finished')
+    time.sleep(1)  
 
-    time.sleep(1)
-
-async def main():
+async def main():  
     try:
-        GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 23 to be an input pin and set initial value to be pulled low (off)
-        GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
-        # button_callback(4)
-        task = asyncio.create_task(rainbow_cycle(0.1))
-        input("Press Enter to stop...")
+        GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Setter opp pin 15 som en inngangspinne og setter initialverdien til å være trukket lav (av)
+        GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)  # En hendelsesdeteksjon på stigende flanke for pin 15 med en rebound-tid på 1000 ms som starter en deteksjon
+        task = asyncio.create_task(rainbow_cycle(0.1))  
+        input("Press Enter to stop...")  # En input som holder programmet slik at knappen kan brukes
 
-    except Exception as e:
+    except Exception as e:  # Hvis en unntak oppstår, skriv ut feilmeldingen
         print(f"An error occurred: {str(e)}")
 
     finally:
-        GPIO.cleanup()
+        GPIO.cleanup()  
 
 
-asyncio.run(main())
+asyncio.run(main()) 
