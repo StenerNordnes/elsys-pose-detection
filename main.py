@@ -1,0 +1,66 @@
+from colors import fade_yellow, rainbow_cycle, blink_green, blink_red, shutOff, fillEveryOtherRedYellow
+import RPi.GPIO as GPIO
+import time
+from camtest import cameraMain
+import asyncio
+
+GPIO.setwarnings(False) # Ignore warning for now
+
+push_count = 0
+is_running = False
+
+
+def button_callback(channel):
+    global push_count
+    global is_running
+    if is_running:
+        print('Button is already running')
+        return
+    
+    is_running = True
+
+    looper = push_count % 1
+    print("Button was pushed!", looper)
+
+    if looper == 0:
+        fillEveryOtherRedYellow()
+        wasSucessful = cameraMain()
+        if wasSucessful:
+            blink_green()
+        else:
+            blink_red()
+    
+    time.sleep(1)
+    push_count += 1
+    is_running = False
+    isIdleRunning = True
+
+    task = asyncio.create_task(rainbow_cycle(0.1))
+
+    # while isIdleRunning:
+    #     isIdleRunning = rainbow_cycle(0.1)
+
+    #     if not isIdleRunning:
+    #         shutOff()
+    #         break
+    
+    print('Button callback finished')
+
+    time.sleep(1)
+
+async def main():
+    try:
+        GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 23 to be an input pin and set initial value to be pulled low (off)
+        GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
+        # button_callback(4)
+        task = asyncio.create_task(rainbow_cycle(0.1))
+        input("Press Enter to stop...")
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+
+    finally:
+        GPIO.cleanup()
+
+
+asyncio.run(main())

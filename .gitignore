@@ -1,0 +1,78 @@
+examples/
+
+# Ignore Python virtual environment
+env/
+.venv
+
+posemein-76815-e7599e66472b.json
+
+*-log
+
+poses_images_out_test
+poses_images_out_train
+test_custom_dataset
+tmp
+yoga_cg
+pose_images
+split_pose_images
+
+test_data.csv
+train_data.csv
+
+# Ignore tflite models
+*.hdf5
+*.mp4
+*.jpg
+secrets.txt
+
+
+# Ignore pipenv environment
+Pipfile.lock
+
+# Ignore PyCharm files
+.idea/
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore compiled Python files
+*.pyc
+
+# Ignore coverage reports
+htmlcov/
+
+# Ignore logs
+*.log
+
+# Ignore cache files
+__pycache__/
+
+# Ignore environment variables file
+.env
+
+# Ignore package lock files
+pip-lock.txt
+poetry.lock
+
+# Ignore generated documentation
+docs/_build/
+
+# Ignore local development settings
+local_settings.py
+
+# Ignore SQLite database file
+*.sqlite3
+
+# Ignore macOS metadata files
+.DS_Store
+
+# Ignore Windows thumbnail cache
+Thumbs.db
+
+# Ignore editor-specific files
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore Pytest cache
+pytest_cache/
