@@ -10,7 +10,8 @@ push_count = 0
 is_running = False 
 
 
-def button_callback(channel):  # Tilbakekallsfunksjon som vil bli kalt når knappen trykkes
+# Tilbakekallsfunksjon som vil bli kalt når knappen trykkes
+def pose_callback(channel):  
     global push_count  
     global is_running  
     if is_running:  # Hvis knappen allerede kjører, skriv ut en melding og returner
@@ -21,8 +22,10 @@ def button_callback(channel):  # Tilbakekallsfunksjon som vil bli kalt når knap
 
     print("Button was pushed!")
 
-    fillEveryOtherRedYellow()  # Initialiserer lyset til poserings mode
-    wasSucessful = cameraMain()  # CameraMain håndterer poseringsgjenkjenning og returnerer True hvis posen ble gjenkjent, ellers False
+    # Initialiserer lyset til poserings mode
+    fillEveryOtherRedYellow()  
+    # CameraMain håndterer poseringsgjenkjenning 
+    wasSucessful = cameraMain()  
 
     if wasSucessful:  # Blinker grønt ved vellykket posering
         blink_green()
@@ -34,15 +37,17 @@ def button_callback(channel):  # Tilbakekallsfunksjon som vil bli kalt når knap
     push_count += 1 
     is_running = False 
 
-    asyncio.create_task(rainbow_cycle(0.1))  # Oppretter asynkron idle state når den venter på en ny deteksjon
+    # Oppretter asynkron idle state når den venter på en ny deteksjon
+    asyncio.create_task(rainbow_cycle(0.1))  
     print('Button callback finished')
     time.sleep(1)  
 
 async def main():  
     try:
         GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)  # Setter opp pin 15 som en inngangspinne og setter initialverdien til å være trukket lav (av)
-        GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)  # En hendelsesdeteksjon på stigende flanke for pin 15 med en rebound-tid på 1000 ms som starter en deteksjon
+        GPIO.add_event_detect(15, GPIO.RISING, callback=pose_callback, bouncetime=1000)  # En hendelsesdeteksjon på stigende flanke for pin 15 med en rebound-tid på 1000 ms som starter en deteksjon
         task = asyncio.create_task(rainbow_cycle(0.1))  
+        await task
         input("Press Enter to stop...")  # En input som holder programmet slik at knappen kan brukes
 
     except Exception as e:  # Hvis en unntak oppstår, skriv ut feilmeldingen

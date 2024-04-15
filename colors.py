@@ -92,7 +92,10 @@ def wheel(pos):
 
 async def rainbow_cycle(wait):
 
-    for j in range(255):
+    numRange = 1 # 255
+
+
+    for j in range(numRange):
         for i in range(NUM_LEDS):
             pixel_index = (i * 256 // NUM_LEDS) + j
             pixels[i] = wheel(pixel_index & 255)

@@ -1,4 +1,4 @@
-bicep
+biceps
 bulldog
 normal
 stjerne

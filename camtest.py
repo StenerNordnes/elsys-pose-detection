@@ -36,10 +36,10 @@ def cameraMain():  # Definerer hovedfunksjonen for kameraet
     while True:  # Starter en uendelig løkke
 
         img = picam2.capture_array()  # Tar et bilde med kameraet og lagrer det som en array
-        tensor = tf.convert_to_tensor(img)  # Konverterer bildet til en tensor
+        tensor: tf.Tensor = tf.convert_to_tensor(img)  # Konverterer bildet til en tensor
         (newName, conf, frame) = predictImage(tensor)  # Bruker predictImage-funksjonen til å forutsi posen i bildet
         
-        if newName == pose and conf >= 0.99:  # Hvis den forutsagte posen er lik den ønskede posen og konfidensen er større enn eller lik 0.99, øk poseConsecutive og nullstill failSafeConsecutive
+        if newName == pose and conf >= 0.90:  # Hvis den forutsagte posen er lik den ønskede posen og konfidensen er større enn eller lik 0.99, øk poseConsecutive og nullstill failSafeConsecutive
             poseConsecutive += 1
             failSafeConsecutive = 0
             
@@ -51,7 +51,7 @@ def cameraMain():  # Definerer hovedfunksjonen for kameraet
             print(f'Pose {newName} detected for 15 consecutive frames')
             print(f'Updating score for {current_userID}')
             update_score(current_userID, pose)
-            playAudio(current_userID)
+            # playAudio(current_userID)
             successful_exit = True
             break
 

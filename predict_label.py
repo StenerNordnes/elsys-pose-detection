@@ -3,11 +3,12 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
+from typing import Tuple, Optional
 from pose import detect, draw_prediction_on_image
 
 
 with open('pose_labels.txt', 'r') as  f:
-    labels = f.readlines()
+    labels = f.readlines()  # Leser alle linjene i filen 'pose_labels.txt' og lagrer dem i variabelen 'labels'
 
 detection_threshold = 0.5
 # image_path = "./tmp/vjmi7zdpxmo31.jpg"
@@ -21,17 +22,25 @@ detection_threshold = 0.5
 #     image = tf.io.decode_jpeg(image)
 
 
-def predictImage(image):
-    person = detect(image)
 
-    # Save landmarks if all landmarks were detected
+def predictImage(image: tf.Tensor) -> Tuple[str, float, Optional[np.ndarray]]:
+    """
+    Denne funksjonen tar inn et bilde som en tensor, bruker en pose-deteksjonsmodell til å finne en person i bildet,
+    og returnerer klassifiseringen av posen, konfidensen for klassifiseringen, og et bilde med en wireframe av posen.
+    """
+
+    # Detekterer personen i bildet ved å benytte 
+    # MoveNet-modellen fra TensorFlow Hub sin eksempel kode
+    person = detect(image)  
+
+    # Lagrer landmarks hvis alle landmarks ble detektert
     min_landmark_score = min([keypoint.score for keypoint in person.keypoints])
     should_keep_image = min_landmark_score >= detection_threshold
 
     if not should_keep_image:
         pass
 
-    # Get landmarks and scale it to the same size as the input image
+    # Henter landmarks og skalerer det til samme størrelse som inputbildet
     pose_landmarks = np.array(
         [
             [keypoint.coordinate.x, keypoint.coordinate.y, keypoint.score]
@@ -40,44 +49,45 @@ def predictImage(image):
         dtype=np.float32,
     )
 
-    # Normalize landmarks
+    # Normaliserer landmarks
     coordinates = pose_landmarks.flatten().astype(np.float32).tolist()
     coordinates = np.array(coordinates, dtype=np.float32).reshape((1, -1))
 
-    # Load the model
+    # Laster modellen
     interpreter = tf.lite.Interpreter(model_path="pose_classifier.tflite")
     interpreter.allocate_tensors()
 
-    # Get input and output tensors
+    # Henter input- og output-tensorer
     input_index = interpreter.get_input_details()[0]["index"]
     output_index = interpreter.get_output_details()[0]["index"]
 
-    # Run the model
+    # Kjører modellen
     interpreter.set_tensor(input_index, coordinates)
     interpreter.invoke()
     output = interpreter.tensor(output_index)
 
-    print(output())
-
+    # Henter klassifiseringen og konfidensen
     labelIdx = np.argmax(output()[0])
-
     confidence = output()[0][labelIdx]
-
     classification = labels[labelIdx].strip()
 
     print(classification, confidence)
+
+    wireframe_image = None
+    # Kommenter inn for debugging
     # wireframe_image = draw_prediction_on_image(
     #     np.array(image), person, close_figure=True, keep_input_size=True
     # )
-    wireframe_image = None
-
 
     return (
-        classification, 
-            confidence, 
-            wireframe_image
-            )
-# %%
+        classification,  # Klassifiseringen av posen
+        confidence,  # Konfidensen for klassifiseringen
+        wireframe_image  # Bilde med en wireframe av posen
+    )
+
+
+
+## TEST FUNKSJONER
 def test_image(filename):
     image = tf.io.read_file(f'./tmp/{filename}.jpg') 
     image = tf.io.decode_jpeg(image)
@@ -90,7 +100,6 @@ def test_image(filename):
     plt.imshow(img)
     plt.show()
 
-# %%
 
 
 def VideoCapture():
