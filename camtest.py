@@ -1,10 +1,13 @@
 import time
 import tensorflow as tf
 import cv2
-from firebase_updating import update_score, pasientMap, fetch_current_user, playAudio, fetch_user_pose  # Importerer funksjoner fra firebase_updating-modulen
+from firebase_updating import update_score, pasientMap, fetch_current_user, fetch_user_pose, db, bucket  # Importerer funksjoner fra firebase_updating-modulen
 from predict_label import predictImage  # Importerer funksjonen predictImage fra predict_label-modulen
 from picamera2 import Picamera2  # Importerer Picamera2-klassen fra picamera2-modulen
 import RPi.GPIO as GPIO
+import pygame
+from mutagen.mp3 import MP3
+import time
 
 if __name__ == '__main__':
     GPIO.setmode(GPIO.BCM)  # Setter GPIO-modus til BCM
@@ -16,6 +19,53 @@ picam2 = Picamera2()  # Oppretter et nytt Picamera2-objekt
 config = picam2.create_still_configuration()  # Oppretter en stillbildekonfigurasjon
 picam2.configure(config)  # Konfigurerer kameraet med den opprettede konfigurasjonen
 picam2.start()  # Starter kameraet
+
+destination_file_name = r"output.mp3"
+
+class AudioPlayer:
+    def __init__(self, db, bucket):
+        self.db = db
+        self.bucket = bucket
+        pygame.mixer.init()
+
+    def play_audio(self, user_id):
+        try:
+            user_object = self.db.collection('brukere').document(user_id).get()
+
+            if user_object.to_dict()['melodi'] != '':
+                filename = user_object.to_dict()['melodi']
+                filename = 'Mussa/' + filename 
+            else:
+                music_name = user_object.to_dict()['musikk']
+                filename = self.db.collection('Musikk').document(music_name).get().to_dict()['filnavn']
+                filename = 'Mussa/' + filename
+
+            blob = self.bucket.blob(filename)
+            blob.download_to_filename(destination_file_name)
+
+            audio = MP3(destination_file_name)
+            print(audio.info.length)
+
+            sound = pygame.mixer.music.load(destination_file_name)  
+            pygame.mixer.music.play()
+
+            time.sleep(audio.info.length)
+            pygame.mixer.music.stop()
+
+            pygame.quit()
+
+        except Exception as e:
+            print(e)
+            print('No music found for user')
+            pygame.quit()
+            return
+
+
+
+audio = AudioPlayer(db, bucket)
+
+
+
 
 def cameraMain():  # Definerer hovedfunksjonen for kameraet
     successful_exit = False  # Initialiserer variabelen successful_exit
@@ -51,7 +101,7 @@ def cameraMain():  # Definerer hovedfunksjonen for kameraet
             print(f'Pose {newName} detected for 15 consecutive frames')
             print(f'Updating score for {current_userID}')
             update_score(current_userID, pose)
-            # playAudio(current_userID)
+            audio.play_audio(current_userID)
             successful_exit = True
             break
 
@@ -66,4 +116,5 @@ def cameraMain():  # Definerer hovedfunksjonen for kameraet
     return successful_exit  # Returnerer verdien av successful_exit
 
 if __name__ == '__main__':
-    cameraMain()  # Kjører hovedfunksjonen for kameraet hvis dette skriptet kjøres som hovedprogrammet
+    # cameraMain()  # Kjører hovedfunksjonen for kameraet hvis dette skriptet kjøres som hovedprogrammet'
+    audio.play_audio('SIqui9NaXKfDspXwnfvZVWb5Nz32')

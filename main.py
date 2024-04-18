@@ -38,7 +38,7 @@ def pose_callback(channel):
     is_running = False 
 
     # Oppretter asynkron idle state når den venter på en ny deteksjon
-    asyncio.create_task(rainbow_cycle(0.1))  
+    rainbow_cycle(0.1)
     print('Button callback finished')
     time.sleep(1)  
 
