@@ -10,37 +10,28 @@ push_count = 0
 is_running = False 
 
 
-# Tilbakekallsfunksjon som vil bli kalt når knappen trykkes
+# Tilbakekallsfunksjon som vil bli kalt på stigende flanke av ultralydssensoren
 def pose_callback(channel):  
-    global push_count  
     global is_running  
-    if is_running:  # Hvis knappen allerede kjører, skriv ut en melding og returner
+    if is_running:  # Hvis knappen allerede kjører, returner
         print('Button is already running')
         return
-    
-    is_running = True  
-
-    print("Button was pushed!")
+    is_running = True
 
     # Initialiserer lyset til poserings mode
     fillEveryOtherRedYellow()  
-    # CameraMain håndterer poseringsgjenkjenning 
-    wasSucessful = cameraMain()  
 
+    # cameraMain() håndterer poseringsgjenkjenning 
+    wasSucessful = cameraMain()  
     if wasSucessful:  # Blinker grønt ved vellykket posering
         blink_green()
     else:  # Blinker rødt ved mislykket posering
         blink_red()
-
-    
     time.sleep(1)  
-    push_count += 1 
     is_running = False 
 
-    # Oppretter asynkron idle state når den venter på en ny deteksjon
-    asyncio.create_task(rainbow_cycle(0.1))  
-    print('Button callback finished')
-    time.sleep(1)  
+    # Starter "idle" modus for lyslenken
+    rainbow_cycle(0.1)
 
 async def main():  
     try:

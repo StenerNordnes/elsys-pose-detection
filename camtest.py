@@ -19,50 +19,33 @@ picam2.start()  # Starter kameraet
 
 def cameraMain():  # Definerer hovedfunksjonen for kameraet
     successful_exit = False  # Initialiserer variabelen successful_exit
-
-    name = ''
     poseConsecutive = 0
     failSafeConsecutive = 0
-
-    current_userID = fetch_current_user()  # Henter ID-en til den nåværende brukeren
-    pose = fetch_user_pose(current_userID)  # Henter posen til den nåværende brukeren
-
-    print(f'Current user: {current_userID}\nPose: {pose}')  # Skriver ut ID-en og posen til den nåværende brukeren
-
-    if current_userID == '' or pose is None:  # Hvis det ikke er noen nåværende bruker eller posen er None, avslutt funksjonen
+    current_userID = fetch_current_user()  # Henter ID-en til innlogget bruker
+    pose = fetch_user_pose(current_userID)  # Henter poseringen
+    if current_userID == '' or pose is None: 
         print('No user logged in')
         return
-
-    while True:  # Starter en uendelig løkke
-
+    while True: 
         img = picam2.capture_array()  # Tar et bilde med kameraet og lagrer det som en array
         tensor: tf.Tensor = tf.convert_to_tensor(img)  # Konverterer bildet til en tensor
-        (newName, conf, frame) = predictImage(tensor)  # Bruker predictImage-funksjonen til å forutsi posen i bildet
-        
-        if newName == pose and conf >= 0.90:  # Hvis den forutsagte posen er lik den ønskede posen og konfidensen er større enn eller lik 0.99, øk poseConsecutive og nullstill failSafeConsecutive
+        (newName, confidence, frame) = predictImage(tensor)  # Bruker predictImage-funksjonen til å forutsi posen i bildet
+        if newName == pose and confidence >= 0.90: 
             poseConsecutive += 1
             failSafeConsecutive = 0
-            
-        else:  # Hvis den forutsagte posen ikke er lik den ønskede posen, nullstill poseConsecutive og øk failSafeConsecutive
+        else:  
             poseConsecutive = 0
             failSafeConsecutive += 1
-
-        if poseConsecutive == 10:  # Hvis den ønskede posen har blitt forutsagt i 10 påfølgende bilder, oppdater scoren til brukeren og spill av lyd
-            print(f'Pose {newName} detected for 15 consecutive frames')
+        if poseConsecutive == 10:  # Etter 10 korrekte gjenkjenninger bilder, oppdater scoren til brukeren og spill av lyd
+            print(f'Pose {newName} detected for 10 consecutive frames')
             print(f'Updating score for {current_userID}')
             update_score(current_userID, pose)
-            # playAudio(current_userID)
+            playAudio(current_userID)
             successful_exit = True
             break
-
-        if failSafeConsecutive == 30:  # Hvis den ønskede posen ikke har blitt forutsagt i 30 påfølgende bilder, avslutt løkken
+        if failSafeConsecutive == 30:  # Etter 30 mislykkede gjenkjenninger, avslutt programmet
             print('Pose not detected for 30 consecutive frames')
             break
-
-        name = newName
-        print(newName, conf)
-        print('Consecutive count: ', poseConsecutive)
-
     return successful_exit  # Returnerer verdien av successful_exit
 
 if __name__ == '__main__':

@@ -73,12 +73,12 @@ with open('pose_labels.txt', 'r') as  f:
     labels = [label.strip() for label in f.readlines()]
     pasientMap = {label: f'pasient{i+1}' for i, label in enumerate(labels)}
 
-# Funksjon for å oppdatere poengsummen til en bruker basert på posen de laget
+# Funksjon for å oppdatere poengsummen til en bruker basert på posen de har valgt
 def update_score(user_id, pose):
     try:
         # Henter dokumentet for den gitte posen fra 'Poseringer' samlingen i Firestore
         pose_ref = db.collection('Poseringer').document(pose)
-        pose_points = pose_ref.get().to_dict()['Poeng']
+        pose_points = pose_ref.get().to_dict()['Poeng'] # Henter poengsummen for posen
 
         # Henter brukerdokumentet og oppdaterer poengsummen og innsjekkstidspunktet
         doc_ref = db.collection('brukere').document(user_id)
@@ -86,17 +86,13 @@ def update_score(user_id, pose):
             'score': firestore.Increment(pose_points),
             'innsjekkTidspunkt': firestore.SERVER_TIMESTAMP,
         })
-        print(f'Oppdatert poengsum for {user_id} med {pose_points} poeng')
-
         # Logger ut brukeren ved å sette 'userID' feltet i 'current_user' dokumentet til en tom streng
         logged_in_ref = db.collection('data').document('current_user')
         logged_in_ref.update({
             'userID': '',
         })
-        print('Logget ut bruker')
     except Exception as e:
         print(e)
-        return
 
 # Funksjon for å hente ID-en til den nåværende brukeren
 def fetch_current_user() -> str:

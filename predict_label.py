@@ -24,11 +24,6 @@ detection_threshold = 0.5
 
 
 def predictImage(image: tf.Tensor) -> Tuple[str, float, Optional[np.ndarray]]:
-    """
-    Denne funksjonen tar inn et bilde som en tensor, bruker en pose-deteksjonsmodell til å finne en person i bildet,
-    og returnerer klassifiseringen av posen, konfidensen for klassifiseringen, og et bilde med en wireframe av posen.
-    """
-
     # Detekterer personen i bildet ved å benytte 
     # MoveNet-modellen fra TensorFlow Hub sin eksempel kode
     person = detect(image)  
@@ -38,7 +33,7 @@ def predictImage(image: tf.Tensor) -> Tuple[str, float, Optional[np.ndarray]]:
     should_keep_image = min_landmark_score >= detection_threshold
 
     if not should_keep_image:
-        pass
+        return ("Unknown", 0.0, None)
 
     # Henter landmarks og skalerer det til samme størrelse som inputbildet
     pose_landmarks = np.array(
@@ -71,13 +66,11 @@ def predictImage(image: tf.Tensor) -> Tuple[str, float, Optional[np.ndarray]]:
     confidence = output()[0][labelIdx]
     classification = labels[labelIdx].strip()
 
-    print(classification, confidence)
-
     wireframe_image = None
-    # Kommenter inn for debugging
-    # wireframe_image = draw_prediction_on_image(
-    #     np.array(image), person, close_figure=True, keep_input_size=True
-    # )
+    # Kommenter ut for å speede opp prosessen
+    wireframe_image = draw_prediction_on_image(
+        np.array(image), person, close_figure=True, keep_input_size=True
+    )
 
     return (
         classification,  # Klassifiseringen av posen
