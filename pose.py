@@ -317,7 +317,7 @@ def test_image(filename):
 # Here we will preprocess the images and create the csv files
 is_skip_step_1 = False
 
-use_custom_dataset = True
+use_custom_dataset = False
 
 dataset_is_split = False
 
@@ -576,7 +576,7 @@ if __name__ == '__main__':
 
 
   # Define the model
-  inputs = tf.keras.Input(shape=(51))
+  inputs = tf.keras.Input(shape=(51,))
   embedding = landmarks_to_embedding(inputs)
 
   layer = keras.layers.Dense(128, activation=tf.nn.relu6)(embedding)

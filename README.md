@@ -62,3 +62,39 @@ python3 main.py
 ```
 
 <!-- # Dette er i utganspunktet ikke nødvendig om pakkene som kreves allerede er installert -->
+
+
+### Installasjon - For opplæring av modell
+
+1. Aktiver virtual environment
+
+```bash
+.venv/Scripts/activate
+```
+
+2. Installer nødvendige pakker
+
+```bash
+pip install tensorflow_hub matplotlib tqdm scikit-learn tensorflow_hub opencv-python requests pandas numpy
+```
+
+3. Last ned MoveNet modellen fra [Tensorflow Hub](https://tfhub.dev/google/lite-model/movenet/singlepose/thunder/tflite)
+
+```powershell
+Invoke-WebRequest -Uri "https://tfhub.dev/google/lite-model/movenet/singlepose/thunder/tflite/float16/4?lite-format=tflite" -OutFile "movenet_thunder.tflite"
+```
+
+4. Last ned eksempel kode fra Tensorflow
+
+```powershell
+git clone https://github.com/tensorflow/examples.git
+```
+
+5. Kjør programmet
+
+```powershell
+python pose.py
+```
+
+
+
