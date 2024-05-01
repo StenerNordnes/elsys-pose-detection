@@ -5,17 +5,17 @@
 import tensorflow as tf
 from pose import detect
 
-# picam2 = Picamera2()
+picam2 = Picamera2()
 
-# config = picam2.create_still_configuration()
-# picam2.configure(config)
-# picam2.start()
+config = picam2.create_still_configuration()
+picam2.configure(config)
+picam2.start()
 
 
 # img = picam2.capture_array()
 detection_threshold = 0.1
 
-# cv2.imwrite('frame.jpg', img)
+cv2.imwrite('frame.jpg', img)
 
 image_path = 'pose_images/for lett/IMG_4174.JPG'
 

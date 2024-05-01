@@ -1,13 +1,12 @@
 from colors import fade_yellow, rainbow_cycle, blink_green, blink_red, shutOff, fillEveryOtherRedYellow
-from camtest import cameraMain
 import RPi.GPIO as GPIO
 import time
+from camtest import cameraMain
 
 GPIO.setwarnings(False) # Ignore warning for now
 
 push_count = 0
 is_running = False
-
 
 
 def button_callback(channel):
@@ -50,8 +49,8 @@ def button_callback(channel):
 
 try:
     GPIO.setup(15, GPIO.IN, pull_up_down=GPIO.PUD_DOWN) # Set pin 23 to be an input pin and set initial value to be pulled low (off)
-    # # Setup event on pin 23 rising edge with debounce time
-    GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
+    # GPIO.add_event_detect(15, GPIO.RISING, callback=button_callback, bouncetime=1000)
+    button_callback(4)
     input("Press Enter to stop...")
 
 

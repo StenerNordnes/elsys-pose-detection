@@ -1,9 +1,3 @@
-
-
-
-
-#Bruker RPi.GPIO-biblioteketn
-
 import RPi.GPIO as GPIO
 import time
 
@@ -12,7 +6,7 @@ button_pin = 15
 GPIO.setmode(GPIO.BCM)  # Use Broadcom pin-numbering scheme
 GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Button pin set as input w/ pull-up
 GPIO.setwarnings(False) #ignorerer advarsler foreløpig
-# Initialize variables
+# Initialize    
 loop_running = False
 last_press_time = 0
 cooldown_period = 1  # Cooldown period in seconds

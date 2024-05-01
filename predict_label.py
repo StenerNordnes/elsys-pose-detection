@@ -1,24 +1,24 @@
 from PIL import Image
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 import cv2
 from pose import detect, draw_prediction_on_image
-import matplotlib.pyplot as plt
 
 
 with open('pose_labels.txt', 'r') as  f:
     labels = f.readlines()
 
 detection_threshold = 0.5
-image_path = "./tmp/vjmi7zdpxmo31.jpg"
-image = tf.io.read_file(image_path)
+# image_path = "./tmp/vjmi7zdpxmo31.jpg"
+# image = tf.io.read_file(image_path)
 
-fileformat = image_path.split(".")[-1]
+# fileformat = image_path.split(".")[-1]
 
-if fileformat == "png":
-    image = tf.io.decode_png(image)
-else:
-    image = tf.io.decode_jpeg(image)
+# if fileformat == "png":
+#     image = tf.io.decode_png(image)
+# else:
+#     image = tf.io.decode_jpeg(image)
 
 
 def predictImage(image):
