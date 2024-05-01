@@ -66,10 +66,10 @@ def predictImage(image):
     classification = labels[labelIdx].strip()
 
     print(classification, confidence)
-    # wireframe_image = draw_prediction_on_image(
-    #     np.array(image), person, close_figure=True, keep_input_size=True
-    # )
     wireframe_image = None
+    wireframe_image = draw_prediction_on_image(
+        np.array(image), person, close_figure=True, keep_input_size=True
+    )
 
 
     return (
@@ -115,7 +115,7 @@ def VideoCapture():
         # Run the prediction model on the frame
         newName, conf, frame = predictImage(frame_tensor)
 
-        if conf > 0.999:
+        if True:
             name = newName
         else:
             name = "Unknown"
@@ -179,6 +179,6 @@ def VideoCapture2():
     out.release()
 
 if __name__ == "__main__":
-    test_image("vjmi7zdpxmo31")
+    # test_image("vjmi7zdpxmo31")
     # VideoCapture2()
-    # VideoCapture()
+    VideoCapture()

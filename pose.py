@@ -364,7 +364,7 @@ def split_into_train_test(images_origin, images_dest, test_split):
     # Get all filenames for this dir, filtered by filetype
     filenames = os.listdir(os.path.join(images_origin, dir))
     filenames = [os.path.join(images_origin, dir, f) for f in filenames if (
-        f.endswith('.png') or f.endswith('.jpg') or f.endswith('.jpeg') or f.endswith('.bmp'))]
+        f.endswith('.png') or f.endswith('.jpg') or f.endswith('.jpeg') or f.endswith('.bmp') or f.endswith('.JPG'))]
     # Shuffle the files, deterministically
     filenames.sort()
     random.seed(42)
@@ -659,6 +659,7 @@ if __name__ == '__main__':
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
+    plt.show(block=True)
 
   # Classify pose in the TEST dataset using the trained model
   y_pred = model.predict(X_test)
@@ -669,6 +670,7 @@ if __name__ == '__main__':
 
   # Plot the confusion matrix
   cm = confusion_matrix(np.argmax(y_test, axis=1), np.argmax(y_pred, axis=1))
+
   plot_confusion_matrix(cm,
                         class_names,
                         title ='Confusion Matrix of Pose Classification Model')
